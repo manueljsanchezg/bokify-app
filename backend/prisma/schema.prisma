@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  role String
+  reservations Reservation[]
+}
+
+model Book {
+  id Int @id @default(autoincrement())
+  title String
+  author String
+  genre String
+  copies Copy[]
+}
+
+model Copy {
+  id Int @id @default(autoincrement())
+  isAvailable Boolean @default(true)
+  book Book @relation(fields: [bookId], references: [id])
+  bookId Int
+  reservations Reservation[]
+}
+
+model Reservation {
+  id Int @id @default(autoincrement())
+  status String @default("active")
+  startDate DateTime
+  returnDate DateTime
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  copy Copy @relation(fields: [copyId], references: [id])
+  copyId Int
+}
