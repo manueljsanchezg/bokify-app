@@ -10,7 +10,12 @@ const SECRET = process.env.SECRET ?? 'secret';
 
 export const getUsers = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const users = await userRepository.findMany();
+        const users = await userRepository.findMany({
+            select: {
+                email: true,
+                reservations: true
+            }
+        });
 
         return reply.send(users);
     } catch (error) {

@@ -22,9 +22,9 @@ app.get('/ping', async (request, reply) => {
     return reply.send('pong');
 });
 
-app.register(UserRoutes, { prefix: "/users" });
-app.register(BookRoutes, { prefix: "/books" });
-app.register(CopyRoutes, { prefix: "/copies" });
-app.register(ReservationRoutes, { prefix: "/reservations" })
+app.register(UserRoutes, { prefix: "/api/users" });
+app.register(BookRoutes, { prefix: "/api/books" });
+app.register(CopyRoutes, { prefix: "/api/copies" });
+app.register(ReservationRoutes, { prefix: "/api/reservations" })
 
 export default app

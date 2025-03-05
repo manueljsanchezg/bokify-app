@@ -11,7 +11,7 @@ export default async function UserRoutes(fastify: FastifyInstance) {
 
     fastify.get('/', getUsers);
     
-    fastify.post('/register', { schema: loginSchema }, registerUser);
+    fastify.post('/register', { schema: loginSchema},  registerUser);
 
     fastify.post('/login', { schema: loginSchema }, loginUser);
 

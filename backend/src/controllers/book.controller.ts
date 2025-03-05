@@ -7,7 +7,11 @@ const bookRepository = prisma.book;
 
 export const getAllBooks = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const books =  await bookRepository.findMany({});
+        const books =  await bookRepository.findMany({
+            include: {
+                copies: true
+            }
+        });
 
         return reply.send(books);
     } catch (error) {
@@ -34,11 +38,10 @@ export const getBookById = async (request: FastifyRequest, reply: FastifyReply) 
 export const createBook = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
 
-        const { title, description, author, genre, copies } = request.body as CreateBookDTO;
+        const { title, author, genre, copies } = request.body as CreateBookDTO;
 
         const newBook = {
             title: title,
-            description: description,
             author: author,
             genre: genre,
             copies: {
@@ -94,6 +97,7 @@ export const deleteBookById = async (request: FastifyRequest, reply: FastifyRepl
 
         return reply.send(existingBook);
     } catch (error) {
+        console.log(error);
         return reply.status(500).send({ message: "Internal Server Error" })
     }
 }
