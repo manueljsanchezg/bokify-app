@@ -4,6 +4,7 @@ import prisma from "../database/db";
 import { Book } from "@prisma/client";
 
 const bookRepository = prisma.book;
+const copyRepository = prisma.copy;
 
 export const getAllBooks = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -34,6 +35,25 @@ export const getBookById = async (request: FastifyRequest, reply: FastifyReply) 
         return reply.status(500).send({ message: "Internal Server Error" })
     }
 }
+
+export const getCopiesByBookId = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+        const { id } = request.params as { id: string };
+
+        const existingBook =  await bookRepository.findFirst({ where: { id: parseInt(id) } });
+
+        if(!existingBook) {
+            return reply.status(404).send({ message: "Book not found" })
+        }
+
+        const copies = await copyRepository.findMany({ where: { id: parseInt(id) }})
+
+        return reply.send(copies);
+    } catch (error) {
+        return reply.status(500).send({ message: "Internal Server Error" })
+    }
+}
+
 
 export const createBook = async (request: FastifyRequest, reply: FastifyReply) => {
     try {

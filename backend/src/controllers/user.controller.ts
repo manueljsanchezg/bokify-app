@@ -58,7 +58,7 @@ export const loginUser = async (request: FastifyRequest, reply: FastifyReply) =>
 
         const validPassword = await bcrypt.compare(password!, existingUser!.password);
 
-        if (!existingUser || !validPassword) return reply.status(401).send({ message: "Email or Password invalid" });
+        if (!existingUser || !validPassword) return reply.status(401).send({ message: "Invalid Credentials" });
 
         const payload: JwtPayload = { userId: existingUser.id, email: existingUser.email, role: existingUser.role };
         const secret: Secret = SECRET;
