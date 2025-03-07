@@ -15,9 +15,13 @@ const start = async () => {
     } catch (error) {
        console.error(error) 
        process.exit(1)
-    } finally {
-        await prisma.$disconnect();
     }
 }
 
-start()
+process.on('SIGTERM', async () => {
+    console.log('Closing Prisma connection...');
+    await prisma.$disconnect();
+    process.exit(0);
+});
+
+start();
