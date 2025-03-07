@@ -64,6 +64,8 @@ export const doReservation = async (request: FastifyRequest, reply: FastifyReply
 
         const createReservation = await reservationRepository.create({ data: newReservation })
 
+        const updateCopyStatus = await copyRepository.update({ where: { id: copy.id }, data: { isAvailable: false }});
+        console.log(updateCopyStatus);
         return reply.send(createReservation);
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
