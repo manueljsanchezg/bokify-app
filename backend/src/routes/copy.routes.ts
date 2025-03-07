@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { adminCheck } from "../middlewares/adminCheck";
+import { checkIsAdmin } from "../middlewares/checkRoles";
 import { getAllCopies } from "../controllers/copy.controller";
 
 export default async function CopyRoutes(fastify: FastifyInstance) {

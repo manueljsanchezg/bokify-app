@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { deleteUserById, getUsers, loginUser, registerUser } from "../controllers/user.controller";
-import { adminCheck } from "../middlewares/adminCheck";
+import { checkIsAdmin } from "../middlewares/checkRoles";
 import { authorizedSchema, loginSchema } from "../schemas/schemas";
 
 
@@ -15,5 +15,5 @@ export default async function UserRoutes(fastify: FastifyInstance) {
 
     fastify.post('/login', { schema: loginSchema }, loginUser);
 
-    fastify.delete('/:id', { onRequest: [fastify.authenticate, adminCheck] }, deleteUserById);
+    fastify.delete('/:id', { onRequest: [fastify.authenticate, checkIsAdmin] }, deleteUserById);
 }
