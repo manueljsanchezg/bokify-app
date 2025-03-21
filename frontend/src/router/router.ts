@@ -4,6 +4,7 @@ import RegisterPage from "../views/RegisterPage.vue"
 import LoginPage from "../views/LoginPage.vue"
 import { validateToken } from "../service/auth.service";
 import { jwtStorage } from "../storage/storage";
+import { watch } from "vue";
 
 const routes = [
     {path: "/", component: HomeView, meta: { requiresAuth: true } },
@@ -30,4 +31,8 @@ router.beforeEach(async (to) => {
     } catch (error) {
         return "/login";
     }
+})
+
+watch(jwtStorage, () => {
+    if(!jwtStorage.value) router.replace("/login")
 })

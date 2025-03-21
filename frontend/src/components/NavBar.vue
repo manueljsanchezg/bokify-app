@@ -11,17 +11,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { jwtStorage } from '../storage/storage';
 import { router } from '../router/router';
 import { validateToken } from '../service/auth.service';
 
-
-const isAuthenticated = ref(!!jwtStorage.value);
-
-watch(jwtStorage, (newValue) => {
-    isAuthenticated.value = !!newValue;
-})
+const isAuthenticated = computed(() => !!jwtStorage.value);
 
 const handleLogout = () => {
   jwtStorage.value = "";
