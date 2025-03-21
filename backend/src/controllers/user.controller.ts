@@ -29,7 +29,7 @@ export const registerUser = async (request: FastifyRequest, reply: FastifyReply)
 
         const existingUser = await userRepository.findFirst({ where: { email }});
 
-        if (existingUser) return reply.status(400).send({ message: "Email in user" });
+        if (existingUser) return reply.status(405).send({ message: "Email in use" });
 
         const hashedPassword = await bcrypt.hash(password!, 10);
 
@@ -41,7 +41,7 @@ export const registerUser = async (request: FastifyRequest, reply: FastifyReply)
 
         const createUser = await userRepository.create({ data: newUser });
 
-        return reply.status(201).send({ message: "User registered", createUser })
+        return reply.status(201).send({ message: "User registered", email: createUser.email })
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error", error })
     }
@@ -66,7 +66,8 @@ export const loginUser = async (request: FastifyRequest, reply: FastifyReply) =>
 
         const token = generateJwt(payload, secret, options);
 
-        return reply.status(201).send({ message: "User logged", token })
+        console.log(token)
+        return reply.status(201).send({ message: "User logged", token, userId: existingUser.id, email: existingUser.email, role: existingUser.role })
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
     }

@@ -16,4 +16,14 @@ export default async function UserRoutes(fastify: FastifyInstance) {
     fastify.post('/login', { schema: loginSchema }, loginUser);
 
     fastify.delete('/:id', { onRequest: [fastify.authenticate, checkIsAdmin] }, deleteUserById);
+
+    fastify.get('/prueba', async (request, reply) => {
+        while (true) {
+            console.log("Hola")
+        }
+    });
+
+    fastify.get('/prueba2', async (request, reply) => {
+        reply.send("Adios")
+    });
 }
