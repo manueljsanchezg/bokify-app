@@ -2,6 +2,8 @@
     <v-app-bar>
         <v-container>
             <v-btn to="/" v-if="isAuthenticated">Home</v-btn>
+            <v-btn to="/books" v-if="isAuthenticated">Books</v-btn>
+            <v-btn to="/reservations" v-if="isAuthenticated">Reservations</v-btn>
             <v-btn to="/login" v-if="!isAuthenticated">Login</v-btn>
             <v-btn @click="handleLogout" v-if="isAuthenticated">Logout</v-btn>
 
@@ -11,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed } from 'vue';
 import { jwtStorage } from '../storage/storage';
 import { router } from '../router/router';
 import { validateToken } from '../service/auth.service';

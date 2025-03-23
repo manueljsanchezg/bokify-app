@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify"
 import { CreateBookDTO } from "../types/interfaces";
 import prisma from "../database/db";
 import { Book } from "@prisma/client";
+import { on } from "node:events";
 
 const bookRepository = prisma.book;
 const copyRepository = prisma.copy;
@@ -30,6 +31,16 @@ export const getBookById = async (request: FastifyRequest, reply: FastifyReply) 
             return reply.status(404).send({ message: "Book not found" })
         }
 
+        /*
+
+        let isAvailable = false;
+
+        const copies = await copyRepository.findMany({ where: { id: parseInt(id), isAvailable: true }})
+
+        if(copies.length > 0) isAvailable = true;
+
+        */
+       
         return reply.send(existingBook);
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
