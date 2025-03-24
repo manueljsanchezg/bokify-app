@@ -3,14 +3,30 @@
         <h1 class="book-title">{{ book?.title }}</h1>
         <div class="container">
             <div class="book-image">
-                <img src="https://st5.depositphotos.com/23188010/77231/i/450/depositphotos_772310024-stock-photo-blank-book-cover-rendering.jpg" alt="imagen generica de libro" height="500" width="400">
+                <img src="https://st5.depositphotos.com/23188010/77231/i/450/depositphotos_772310024-stock-photo-blank-book-cover-rendering.jpg" alt="imagen generica de libro" height="500" width="500">
             </div>
             <div class="book-info">
-                <p class="info-title">Author</p>
+                
+                <div class="author-container">
+                    <AkPerson />
+                    <p> Author</p>
+                </div>
+                
+                
                 <p class="info">{{ book?.author }}</p>
-                <p class="info-title">Genre</p>
+                
+                <div class="genre-container">
+                    <QuLabel/>
+                    <p>Genre</p>
+                </div>
+                
                 <p class="info">{{ book?.genre }}</p>
-                <p class="info-title">Availability</p>
+                
+                <div class="availability-container">
+                    <AkCalendar />
+                    <p>Availability</p>
+                </div>
+                
                 <p :class="isAvailable ? 'available': 'no-available' ">{{  isAvailable ? "Available" : "Available" }}</p>
             </div>
         </div>
@@ -25,6 +41,9 @@ import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import type { Book } from '../utils/interfaces';
 import { getAvailabilityByBookId, getBookById } from '../service/book.service';
+import { QuLabel } from '@kalimahapps/vue-icons';
+import { AkCalendar } from '@kalimahapps/vue-icons';
+import { AkPerson } from '@kalimahapps/vue-icons';
 
 const route = useRoute();
 const book = ref<Book>();
@@ -76,15 +95,24 @@ onMounted(async () => {
     font-size: 24px;
 }
 
-.info-title {
-    color: rgb(121, 119, 119);
-    font-size: 30px;
-}
-
 .reserve-button-container {
     text-align: center;
     margin-top: 1em;
     margin-bottom: 1em;
+}
+
+.availability-container, .author-container, .genre-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    color: rgb(121, 119, 119);
+    font-size: 30px;
+}
+
+.info, .no-available, .available {
+    margin-left: 2em;
+    font-size: 30px;
 }
 
 .available {

@@ -13,7 +13,7 @@
 
             <p class="error" v-if="loginErrors.loginError">{{ loginErrors.loginError }}</p>
             
-            <v-btn variant="plain" to="/register">Si aun no estas registrado pulse aquí</v-btn>
+            <v-btn variant="plain" to="/register">Are you registered?</v-btn>
             
             <v-btn class="login-button" type="submit">Login</v-btn>
         </v-form type="submit">

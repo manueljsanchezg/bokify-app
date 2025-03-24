@@ -29,8 +29,8 @@ const userData = ref({ email: "", password: "" });
 const registerErrors = ref({ emailError: "", passwordError: "", registerError: "" });
 
 const userDataSchema = z.object({
-    email: z.string().email({ message: "Invalid email"}),
-    password: z.string()
+    email: z.string().email({ message: "Invalid email"}).min(1, { message: "Email is required" }),
+    password: z.string().min(1, { message: "Password is required" })
 });
 
 const handleRegister = async () => {
