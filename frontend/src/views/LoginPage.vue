@@ -33,16 +33,14 @@ const userData = ref({ email: "", password: "" });
 const loginErrors = ref({ emailError: "", passwordError: "", loginError: "" });
 
 const userDataSchema = z.object({
-    email: z.string().email({ message: "Invalid email"}),
-    password: z.string()
+    email: z.string().email({ message: "Invalid email"}).min(1, { message: "Email is required" }),
+    password: z.string().min(1, { message: "Password is required" })
 });
 
 const handleLogin = async () => {
     try {
-        console.log(userData.value)
         userDataSchema.parse(userData.value);
         const response = await loginUser(userData.value);
-        console.log(response);
         if(response.success) {
             alert("Bienvenido: "+response.email)
             jwtStorage.value = response.token;

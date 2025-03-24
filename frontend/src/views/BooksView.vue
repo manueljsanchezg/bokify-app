@@ -23,7 +23,6 @@ const isLoading = ref(true);
 onMounted(async () => {
     try {
         const data = await getAllBooks();
-        console.log(data);
         books.value = data?.books
     } catch (error) {
         console.log(error);

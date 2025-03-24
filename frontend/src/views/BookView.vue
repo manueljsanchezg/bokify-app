@@ -11,7 +11,7 @@
                 <p class="info-title">Genre</p>
                 <p class="info">{{ book?.genre }}</p>
                 <p class="info-title">Availability</p>
-                <p class="info">Available</p>
+                <p :class="isAvailable ? 'available': 'no-available' ">{{  isAvailable ? "Available" : "Available" }}</p>
             </div>
         </div>
         <div class="reserve-button-container">
@@ -24,18 +24,20 @@
 import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import type { Book } from '../utils/interfaces';
-import { getBookById } from '../service/book.service';
+import { getAvailabilityByBookId, getBookById } from '../service/book.service';
 
 const route = useRoute();
 const book = ref<Book>();
+const isAvailable = ref(false);
 const isLoading = ref(true);
 
 
 onMounted(async () => {
     try {
-        const response = await getBookById(route.params.id as string);
-        console.log(response)
-        book.value = response?.book;
+        const bookData = await getBookById(route.params.id as string);
+        book.value = bookData?.book;
+        const isAvailableData = await getAvailabilityByBookId(route.params.id as string);
+        isAvailable.value = isAvailableData.isAvailable;
     } catch (error) {
         console.log(error)
     } finally {
@@ -83,6 +85,13 @@ onMounted(async () => {
     text-align: center;
     margin-top: 1em;
     margin-bottom: 1em;
+}
+
+.available {
+    color: green;
+}
+.no-available {
+    color: red;
 }
 
 </style>

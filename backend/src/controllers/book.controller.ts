@@ -2,16 +2,15 @@ import { FastifyReply, FastifyRequest } from "fastify"
 import { CreateBookDTO } from "../types/interfaces";
 import prisma from "../database/db";
 import { Book } from "@prisma/client";
-import { on } from "node:events";
 
 const bookRepository = prisma.book;
 const copyRepository = prisma.copy;
 
 export const getAllBooks = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const books =  await bookRepository.findMany({
+        const books = await bookRepository.findMany({
             include: {
-                copies: true
+                copies: false
             }
         });
 
@@ -25,22 +24,12 @@ export const getBookById = async (request: FastifyRequest, reply: FastifyReply) 
     try {
         const { id } = request.params as { id: string };
 
-        const existingBook =  await bookRepository.findFirst({ where: { id: parseInt(id) } });
+        const existingBook = await bookRepository.findUnique({ where: { id: parseInt(id) } });
 
-        if(!existingBook) {
+        if (!existingBook) {
             return reply.status(404).send({ message: "Book not found" })
         }
 
-        /*
-
-        let isAvailable = false;
-
-        const copies = await copyRepository.findMany({ where: { id: parseInt(id), isAvailable: true }})
-
-        if(copies.length > 0) isAvailable = true;
-
-        */
-       
         return reply.send(existingBook);
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
@@ -51,15 +40,37 @@ export const getCopiesByBookId = async (request: FastifyRequest, reply: FastifyR
     try {
         const { id } = request.params as { id: string };
 
-        const existingBook =  await bookRepository.findFirst({ where: { id: parseInt(id) } });
+        const existingBook = await bookRepository.findFirst({ where: { id: parseInt(id) } });
 
-        if(!existingBook) {
+        if (!existingBook) {
             return reply.status(404).send({ message: "Book not found" })
         }
 
-        const copies = await copyRepository.findMany({ where: { id: parseInt(id) }})
+        const copies = await copyRepository.findMany({ where: { id: parseInt(id) } })
 
         return reply.send(copies);
+    } catch (error) {
+        return reply.status(500).send({ message: "Internal Server Error" })
+    }
+}
+
+export const getAvailabilityByBookId = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+        const { id } = request.params as { id: string };
+
+        const existingBook = await bookRepository.findUnique({ where: { id: parseInt(id) } });
+
+        if (!existingBook) {
+            return reply.status(404).send({ message: "Book not found" });
+        }
+
+        let isAvailable = false;
+
+        const copies = await copyRepository.findMany({ where: { bookId: existingBook.id, isAvailable: true } });
+
+        if (copies.length > 0) isAvailable = true;
+
+        return reply.send({ isAvailable: isAvailable });
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
     }
@@ -81,7 +92,7 @@ export const createBook = async (request: FastifyRequest, reply: FastifyReply) =
         }
 
         const createBook = await bookRepository.create({ data: newBook });
-        
+
         return reply.status(201).send(createBook);
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
@@ -94,18 +105,18 @@ export const updateBookById = async (request: FastifyRequest, reply: FastifyRepl
 
         const { title, author, genre } = request.body as Partial<Book>;
 
-        const existingBook =  await bookRepository.findUnique({ where: { id: parseInt(id) }});
+        const existingBook = await bookRepository.findUnique({ where: { id: parseInt(id) } });
 
-        if(!existingBook) {
+        if (!existingBook) {
             return reply.status(404).send({ message: "Book not found" })
         }
 
         const updatedBook: Partial<Book> = {}
 
-        if(title) updatedBook.title = title;
-        if(author) updatedBook.author = author;
-        if(genre) updatedBook.genre = genre
-        
+        if (title) updatedBook.title = title;
+        if (author) updatedBook.author = author;
+        if (genre) updatedBook.genre = genre
+
         const updateBook = await bookRepository.update({ where: { id: parseInt(id) }, data: updatedBook });
 
         return reply.send(updateBook);
@@ -118,9 +129,9 @@ export const deleteBookById = async (request: FastifyRequest, reply: FastifyRepl
     try {
         const { id } = request.params as { id: string };
 
-        const existingBook =  await bookRepository.findUnique({ where: { id: parseInt(id) }});
+        const existingBook = await bookRepository.findUnique({ where: { id: parseInt(id) } });
 
-        if(!existingBook) {
+        if (!existingBook) {
             return reply.status(404).send({ message: "Book not found" })
         }
 
@@ -128,7 +139,6 @@ export const deleteBookById = async (request: FastifyRequest, reply: FastifyRepl
 
         return reply.send(existingBook);
     } catch (error) {
-        console.log(error);
         return reply.status(500).send({ message: "Internal Server Error" })
     }
 }

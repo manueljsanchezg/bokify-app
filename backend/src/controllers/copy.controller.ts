@@ -9,8 +9,6 @@ export const getAllCopies = async (request: FastifyRequest, reply: FastifyReply)
 
         const { available } = request.query as { available?: string };
 
-        console.log(available);
-
         const isAvailable = available === "true";
 
         const copies =  await copyRepository.findMany({where: { isAvailable: isAvailable }, include: { book: true }})

@@ -49,8 +49,6 @@ export const registerUser = async (request: FastifyRequest, reply: FastifyReply)
 
 export const loginUser = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-
-        console.log(request.body);
         
         const { email, password } = request.body as { email: string, password: string };
 
@@ -66,7 +64,6 @@ export const loginUser = async (request: FastifyRequest, reply: FastifyReply) =>
 
         const token = generateJwt(payload, secret, options);
 
-        console.log(token)
         return reply.status(201).send({ message: "User logged", token, userId: existingUser.id, email: existingUser.email, role: existingUser.role })
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
@@ -87,7 +84,6 @@ export const deleteUserById = async (request: FastifyRequest, reply: FastifyRepl
 
         return reply.send({ message: "Successfully deleted"});
     } catch (error) {
-        console.log(error)
         return reply.status(500).send({ message: "Internal Server Error", error: error })
     }
 }

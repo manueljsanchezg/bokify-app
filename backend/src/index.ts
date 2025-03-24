@@ -8,6 +8,9 @@ import prisma from "./database/db";
 dotenv.config();
 
 const PORT = Number(process.env.PORT ?? 4000);
+
+/*
+
 const numWorkers = Math.min(4, availableParallelism());
 
 if (cluster.isPrimary) {
@@ -42,3 +45,26 @@ if (cluster.isPrimary) {
 
   start();
 }
+
+*/
+
+
+const start = async () => {
+  try {
+    await prisma.$connect();
+    console.log(`Prisma conectado con SQLite`);
+    app.listen({ port: PORT });
+    console.log(`Server running on PORT ${PORT} and process ${process.pid}`);
+  } catch (error) {
+    console.error("Error al iniciar el servidor:", error);
+    process.exit(1);
+  }
+};
+
+process.on("SIGTERM", async () => {
+  console.log("Cerrando conexión con Prisma...");
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+start();

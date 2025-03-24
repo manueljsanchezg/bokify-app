@@ -27,12 +27,23 @@ export const getBookById = async (bookId: string) => {
     }
 }
 
-export const getCopiesByBookId = async (bookId: number) => {
+export const getCopiesByBookId = async (bookId: string) => {
     try {
         const response = await axios.get(`${API_URL}/${bookId}/copies`, { headers: {
                     'Authorization': `Bearer ${jwtStorage.value}`
         }});
         return { succes: true, ...response.data };
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const getAvailabilityByBookId = async (bookId: string) => {
+    try {
+        const response = await axios.get(`${API_URL}/${bookId}/availability`, { headers: {
+                    'Authorization': `Bearer ${jwtStorage.value}`
+        }});
+        return { ...response.data };
     } catch (error) {
         console.error(error);
     }
@@ -60,7 +71,7 @@ export const updateBook = async (bookData: updateBookBody) => {
     }
 }
 
-export const deleteBookById = async (bookId: number) => {
+export const deleteBookById = async (bookId: string) => {
     try {
         const response = await axios.delete(`${API_URL}/${bookId}`, { headers: {
                     'Authorization': `Bearer ${jwtStorage.value}`

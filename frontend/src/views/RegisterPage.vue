@@ -35,10 +35,8 @@ const userDataSchema = z.object({
 
 const handleRegister = async () => {
     try {
-        console.log(userData.value)
         userDataSchema.parse(userData.value);
         const response = await registerUser(userData.value);
-        console.log(response);
         if(response.success) {
             router.push("/login")
         } else {
