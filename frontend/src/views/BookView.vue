@@ -27,7 +27,7 @@
                     <p>Availability</p>
                 </div>
                 
-                <p :class="isAvailable ? 'available': 'no-available' ">{{  isAvailable ? "Available" : "Available" }}</p>
+                <p :class="isAvailable ? 'available': 'no-available' ">{{  isAvailable ? "Available" : "Not available" }}</p>
             </div>
         </div>
         <div class="reserve-button-container">

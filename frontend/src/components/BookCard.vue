@@ -44,7 +44,7 @@ const gotToBook = async () => {
     color: rgb(43, 40, 40);
     background-color: rgb(255, 255, 255);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    transition: transform 0.5s ease-out, box-shadow 0.5s ease-out;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
 }
 
 .book-card:hover {
