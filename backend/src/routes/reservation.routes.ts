@@ -6,7 +6,7 @@ import { checkNoActiveReservations } from "../middlewares/checkNoActiveReservati
 
 export default async function ReservationRoutes(fastify: FastifyInstance) {
     
-    fastify.get('/', { onRequest: [fastify.authenticate, checkIsAdmin] }, getReservations);
+    fastify.get('/', { onRequest: [fastify.authenticate] }, getReservations);
     fastify.post('/', { onRequest: [fastify.authenticate, checkIsUser, checkNoActiveReservations] }, doReservation);
     
 }

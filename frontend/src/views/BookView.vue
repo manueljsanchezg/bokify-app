@@ -29,7 +29,7 @@
             <v-btn class="reserv-button" width="800px" @click="openModal" :disabled="!isAvailable">Reservar</v-btn>
         </div>
         <transition class="reserve-modal-transition">
-            <ReservationModal ref="modal" />
+            <ReservationModal ref="modal" :bookId="book?.id" />
         </transition>
     </div>
 </template>
@@ -48,7 +48,7 @@ const route = useRoute();
 const book = ref<Book>();
 const isAvailable = ref(false);
 const isLoading = ref(true);
-const modal = ref<ReservationModalInstance | null >(null);
+const modal = ref<ReservationModalInstance | null>(null);
 
 const openModal = () => {
     modal.value!.open();
@@ -129,7 +129,5 @@ onMounted(async () => {
     color: red;
 }
 
-.reserve-modal-transition {
-    
-}
+.reserve-modal-transition {}
 </style>

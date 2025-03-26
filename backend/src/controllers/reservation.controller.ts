@@ -2,8 +2,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import prisma from "../database/db";
 import { Reservation } from "@prisma/client";
 
-
-
 const reservationRepository = prisma.reservation
 const userRepository = prisma.user
 const copyRepository = prisma.copy
@@ -11,8 +9,11 @@ const copyRepository = prisma.copy
 
 export const getReservations = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
+
+        const { userId } = request.user as { userId: string };
         
         const reservations = await reservationRepository.findMany({
+            where: { userId: parseInt(userId) },
             select: {
                 id: true,
                 status: true,
@@ -46,11 +47,15 @@ export const getReservations = async (request: FastifyRequest, reply: FastifyRep
 export const doReservation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
 
+        console.log(request.body);
+
         const { userId } = request.user as { userId: string };
 
         const parsedUserId = parseInt(userId);
 
-        const { returnDate, bookId } = request.body as { returnDate: Date, bookId: number };
+        const { returnDate, bookId } = request.body as { returnDate: string, bookId: number };
+
+        const parsedReturnDate = new Date(returnDate);
 
         const copy = await copyRepository.findFirst({ where: { bookId, isAvailable: true }  });
 
@@ -63,7 +68,7 @@ export const doReservation = async (request: FastifyRequest, reply: FastifyReply
 
         const newReservation = {
             startDate: new Date(),
-            returnDate: returnDate,
+            returnDate: parsedReturnDate,
             userId: parsedUserId,
             copyId: copy.id
         }

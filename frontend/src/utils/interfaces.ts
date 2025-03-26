@@ -32,6 +32,27 @@ export interface Book {
     copies: { id: number; isAvailable: boolean; bookId: number }[];
 }
 
+export interface Reservation {
+    id: number;
+    copy: { 
+        id: number, 
+        book: { 
+            id: number, 
+            title: string
+        }}
+    status: string;
+    returnDate: string;
+    startDate: string;
+    user: { 
+        email: string 
+    }
+}
+
+export interface createReservation {
+    bookId?: number;
+    returnDate?: Date;
+}
+
 export interface ReservationModalInstance {
     open: () => void;
   }
