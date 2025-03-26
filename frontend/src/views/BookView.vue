@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="reserve-button-container">
-            <v-btn class="reserv-button" width="800px" @click="openModal">Reservar</v-btn>
+            <v-btn class="reserv-button" width="800px" @click="openModal" :disabled="!isAvailable">Reservar</v-btn>
         </div>
         <transition class="reserve-modal-transition">
             <ReservationModal ref="modal" />
