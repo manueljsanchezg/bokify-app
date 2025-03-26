@@ -48,18 +48,24 @@ export const doReservation = async (request: FastifyRequest, reply: FastifyReply
 
         const { userId } = request.user as { userId: string };
 
-        const { returnDate, copyId } = request.body as { returnDate: Date, copyId: number };
+        const parsedUserId = parseInt(userId);
 
-        const copy = await copyRepository.findFirst({ where: { id: copyId } });
-        const user = await userRepository.findFirst({ where: { id: parseInt(userId) } });
+        const { returnDate, bookId } = request.body as { returnDate: Date, bookId: number };
 
-        if(!user || !copy) return reply.status(404).send({ message: "User or copy not found" })
+        const copy = await copyRepository.findFirst({ where: { bookId, isAvailable: true }  });
+
+        if(!copy) return reply.send(405).send({ message: "This book doesn't have any available copies"})
+        
+
+        const user = await userRepository.findFirst({ where: { id: parsedUserId } });
+
+        if(!user) return reply.status(404).send({ message: "User not found" })
 
         const newReservation = {
             startDate: new Date(),
             returnDate: returnDate,
-            userId: parseInt(userId),
-            copyId: copyId
+            userId: parsedUserId,
+            copyId: copy.id
         }
 
         const createReservation = await reservationRepository.create({ data: newReservation })

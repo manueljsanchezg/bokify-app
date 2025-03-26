@@ -42,7 +42,6 @@ const handleLogin = async () => {
         userDataSchema.parse(userData.value);
         const response = await loginUser(userData.value);
         if(response.success) {
-            alert("Bienvenido: "+response.email)
             jwtStorage.value = response.token;
             router.push("/")
         } else {
