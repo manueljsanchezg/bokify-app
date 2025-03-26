@@ -3,53 +3,56 @@
         <h1 class="book-title">{{ book?.title }}</h1>
         <div class="container">
             <div class="book-image">
-                <img src="https://st5.depositphotos.com/23188010/77231/i/450/depositphotos_772310024-stock-photo-blank-book-cover-rendering.jpg" alt="imagen generica de libro" height="500" width="500">
+                <img src="https://st5.depositphotos.com/23188010/77231/i/450/depositphotos_772310024-stock-photo-blank-book-cover-rendering.jpg"
+                    alt="imagen generica de libro" height="500" width="500">
             </div>
             <div class="book-info">
-                
                 <div class="author-container">
                     <AkPerson />
                     <p> Author</p>
                 </div>
-                
-                
                 <p class="info">{{ book?.author }}</p>
-                
                 <div class="genre-container">
-                    <QuLabel/>
+                    <QuLabel />
                     <p>Genre</p>
                 </div>
-                
                 <p class="info">{{ book?.genre }}</p>
-                
                 <div class="availability-container">
                     <AkCalendar />
                     <p>Availability</p>
                 </div>
-                
-                <p :class="isAvailable ? 'available': 'no-available' ">{{  isAvailable ? "Available" : "Not available" }}</p>
+                <p :class="isAvailable ? 'available' : 'no-available'">{{ isAvailable ? "Available" : "Not available" }}
+                </p>
             </div>
         </div>
         <div class="reserve-button-container">
-            <v-btn class="reserv-button" width="800px">Reservar</v-btn>
+            <v-btn class="reserv-button" width="800px" @click="openModal">Reservar</v-btn>
         </div>
+        <transition class="reserve-modal-transition">
+            <ReservationModal ref="modal" />
+        </transition>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import type { Book } from '../utils/interfaces';
+import type { Book, ReservationModalInstance } from '../utils/interfaces';
 import { getAvailabilityByBookId, getBookById } from '../service/book.service';
 import { QuLabel } from '@kalimahapps/vue-icons';
 import { AkCalendar } from '@kalimahapps/vue-icons';
 import { AkPerson } from '@kalimahapps/vue-icons';
+import ReservationModal from '../components/ReservationModal.vue';
 
 const route = useRoute();
 const book = ref<Book>();
 const isAvailable = ref(false);
 const isLoading = ref(true);
+const modal = ref<ReservationModalInstance | null >(null);
 
+const openModal = () => {
+    modal.value!.open();
+}
 
 onMounted(async () => {
     try {
@@ -66,7 +69,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-
 .book-view {
     margin-top: 5em;
     margin-right: 2em;
@@ -101,7 +103,9 @@ onMounted(async () => {
     margin-bottom: 1em;
 }
 
-.availability-container, .author-container, .genre-container {
+.availability-container,
+.author-container,
+.genre-container {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -110,7 +114,9 @@ onMounted(async () => {
     font-size: 30px;
 }
 
-.info, .no-available, .available {
+.info,
+.no-available,
+.available {
     margin-left: 2em;
     font-size: 30px;
 }
@@ -118,8 +124,12 @@ onMounted(async () => {
 .available {
     color: green;
 }
+
 .no-available {
     color: red;
 }
 
+.reserve-modal-transition {
+    
+}
 </style>

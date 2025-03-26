@@ -31,3 +31,7 @@ export interface Book {
     genre: string;
     copies: { id: number; isAvailable: boolean; bookId: number }[];
 }
+
+export interface ReservationModalInstance {
+    open: () => void;
+  }
