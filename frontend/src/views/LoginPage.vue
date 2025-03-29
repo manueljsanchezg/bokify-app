@@ -2,27 +2,28 @@
     <div class="login-wrapper">
         <v-form class="login-container" @submit.prevent="handleLogin">
             <h2 class="title">Login</h2>
-            
+
             <v-text-field class="input-text" v-model="userData.email" variant="solo" label="email"></v-text-field>
-            
+
             <p class="error" v-if="loginErrors.emailError">{{ loginErrors.emailError }}</p>
-            
-            <v-text-field class="input-password" v-model="userData.password" type="password" variant="solo" label="password"></v-text-field>
-            
+
+            <v-text-field class="input-password" v-model="userData.password" type="password" variant="solo"
+                label="password"></v-text-field>
+
             <p class="error" v-if="loginErrors.passwordError">{{ loginErrors.passwordError }}</p>
 
             <p class="error" v-if="loginErrors.loginError">{{ loginErrors.loginError }}</p>
-            
+
             <v-btn variant="plain" to="/register">Are you registered?</v-btn>
-            
+
             <v-btn class="login-button" type="submit">Login</v-btn>
         </v-form type="submit">
     </div>
-    
+
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { z } from 'zod';
 import { loginUser } from '../service/user.service';
 import { jwtStorage } from '../storage/storage';
@@ -32,16 +33,29 @@ const userData = ref({ email: "", password: "" });
 
 const loginErrors = ref({ emailError: "", passwordError: "", loginError: "" });
 
+watchEffect(() => {
+    if (loginErrors.value.emailError || loginErrors.value.passwordError || loginErrors.value.loginError) {
+        setTimeout(() => {
+            loginErrors.value.emailError = "";
+            loginErrors.value.passwordError = "";
+            loginErrors.value.loginError = "";
+        }, 2000);
+    }
+})
+
 const userDataSchema = z.object({
-    email: z.string().email({ message: "Invalid email"}).min(1, { message: "Email is required" }),
+    email: z.string().email({ message: "Invalid email" }).min(1, { message: "Email is required" }),
     password: z.string().min(1, { message: "Password is required" })
 });
 
 const handleLogin = async () => {
     try {
+        loginErrors.value.emailError = "";
+        loginErrors.value.passwordError = "";
+        loginErrors.value.loginError = "";
         userDataSchema.parse(userData.value);
         const response = await loginUser(userData.value);
-        if(response.success) {
+        if (response.success) {
             jwtStorage.value = response.token;
             router.push("/")
         } else {
@@ -49,7 +63,7 @@ const handleLogin = async () => {
         }
     } catch (error) {
         console.log(error)
-        if(error instanceof z.ZodError) {
+        if (error instanceof z.ZodError) {
             const fieldErrors = error.errors.map(e => {
                 return {
                     field: e.path[0],
@@ -57,9 +71,9 @@ const handleLogin = async () => {
                 }
             })
             fieldErrors.forEach(e => {
-                if(e.field === "email") {
+                if (e.field === "email") {
                     loginErrors.value.emailError = e.message;
-                } else if(e.field === "password") {
+                } else if (e.field === "password") {
                     loginErrors.value.passwordError = e.message;
                 }
             })
@@ -69,8 +83,7 @@ const handleLogin = async () => {
 
 </script>
 
-<style>
-
+<style scoped>
 .login-wrapper {
     min-height: 100vh;
     display: flex;
@@ -115,6 +128,7 @@ const handleLogin = async () => {
 }
 
 .error {
-    color: red;
+    color: #ff0000;
+    margin-bottom: .5em;
 }
 </style>

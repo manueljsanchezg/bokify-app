@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isOpen" class="reservation-modal-wrapper">
+  <div v-if="isOpen" class="reservation-modal-wrapper" @click.self="close">
     <v-form class="reservation-modal-container">
       <div class="date-container">
         <v-text-field v-model="endDate" type="date" variant="solo" label="Return date" :min="formattedMinDate"></v-text-field>
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { doReservation } from '../service/reservation.service';
 import { router } from '../router/router';
 
@@ -24,6 +24,14 @@ const errors = ref<string | null>(null);
 
 const props = defineProps({
   bookId: Number
+})
+
+watch(errors, (newError) => {
+  if(newError) {
+    setTimeout(() => {
+    errors.value = "";
+  }, 2000);
+  }
 })
 
 const minDate = new Date();
@@ -53,7 +61,7 @@ const handleReservation = async () => {
     errors.value = null;
     const response = await doReservation({returnDate: endDate.value, bookId: props?.bookId});
     if(response.success) {
-      router.push("/books");
+      router.push("/reservations");
     } else {
       errors.value = response.message;
     }
