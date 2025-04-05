@@ -6,8 +6,8 @@
         <p class="error">{{ errors }}</p>
       </div>
       <div class="reservation-modal-operations">
-        <v-btn @click="close" width="50%">Cancelar</v-btn>
-        <v-btn @click="handleReservation" width="50%">Reservar</v-btn>
+        <v-btn @click="close" width="50%">Cancel</v-btn>
+        <v-btn @click="handleReservation" width="50%">Reserve</v-btn>
       </div>
     </v-form>
   </div>
@@ -30,7 +30,7 @@ watch(errors, (newError) => {
   if(newError) {
     setTimeout(() => {
     errors.value = "";
-  }, 2000);
+  }, 2200);
   }
 })
 

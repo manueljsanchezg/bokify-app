@@ -26,33 +26,48 @@
             </div>
         </div>
         <div class="reserve-button-container">
-            <v-btn class="reserv-button" width="800px" @click="openModal" :disabled="!isAvailable">Reservar</v-btn>
+            <v-btn class="reserv-button" width="800px" @click="showModal = true" :disabled="!isAvailable">Reservar</v-btn>
         </div>
-        <transition class="reserve-modal-transition">
-            <ReservationModal ref="modal" :bookId="book?.id" />
-        </transition>
+        <Modal v-model="showModal" :handle-click="handleReservation">
+            <div class="date-container">
+                <v-text-field v-model="endDate" type="date" variant="solo" label="Return date" :min="formattedMinDate"></v-text-field>
+            </div>
+            <p class="error">{{ errors }}</p>
+        </Modal>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { ref, onMounted } from 'vue';
-import type { Book, ReservationModalInstance } from '../utils/interfaces';
+import { ref, onMounted, watch } from 'vue';
+import type { Book } from '../utils/interfaces';
 import { getAvailabilityByBookId, getBookById } from '../service/book.service';
 import { QuLabel } from '@kalimahapps/vue-icons';
 import { AkCalendar } from '@kalimahapps/vue-icons';
 import { AkPerson } from '@kalimahapps/vue-icons';
-import ReservationModal from '../components/ReservationModal.vue';
+import Modal from '../components/Modal.vue';
+import { router } from '../router/router';
+import { doReservation } from '../service/reservation.service';
 
 const route = useRoute();
 const book = ref<Book>();
 const isAvailable = ref(false);
 const isLoading = ref(true);
-const modal = ref<ReservationModalInstance | null>(null);
+const showModal = ref(false)
+const endDate = ref<Date | null>(null);
+const errors = ref<string | null>(null);
 
-const openModal = () => {
-    modal.value!.open();
-}
+watch(errors, (newError) => {
+  if(newError) {
+    setTimeout(() => {
+    errors.value = "";
+  }, 2200);
+  }
+})
+
+const minDate = new Date();
+minDate.setDate(minDate.getDate() + 1);
+const formattedMinDate = minDate.toISOString().split("T")[0];
 
 onMounted(async () => {
     try {
@@ -66,6 +81,26 @@ onMounted(async () => {
         isLoading.value = false
     }
 });
+
+const handleReservation = async () => {
+    console.log("click")
+    try {
+        if (!endDate.value) {
+            errors.value = "Please select a valid date";
+            return;
+        }
+        errors.value = null;
+        const response = await doReservation({ returnDate: endDate.value, bookId: book.value?.id });
+        if (response.success) {
+            router.push("/reservations");
+        } else {
+            errors.value = response.message;
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 </script>
 
 <style scoped>
@@ -129,5 +164,4 @@ onMounted(async () => {
     color: red;
 }
 
-.reserve-modal-transition {}
 </style>

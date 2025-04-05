@@ -46,9 +46,6 @@ export const getReservations = async (request: FastifyRequest, reply: FastifyRep
 
 export const doReservation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-
-        console.log(request.body);
-
         const { userId } = request.user as { userId: string };
 
         const parsedUserId = parseInt(userId);
@@ -60,7 +57,6 @@ export const doReservation = async (request: FastifyRequest, reply: FastifyReply
         const copy = await copyRepository.findFirst({ where: { bookId, isAvailable: true }  });
 
         if(!copy) return reply.send(405).send({ message: "This book doesn't have any available copies"})
-        
 
         const user = await userRepository.findFirst({ where: { id: parsedUserId } });
 
@@ -75,8 +71,34 @@ export const doReservation = async (request: FastifyRequest, reply: FastifyReply
 
         const createReservation = await reservationRepository.create({ data: newReservation })
 
-        const updateCopyStatus = await copyRepository.update({ where: { id: copy.id }, data: { isAvailable: false }});
+        await copyRepository.update({ where: { id: copy.id }, data: { isAvailable: false }});
         return reply.send(createReservation);
+    } catch (error) {
+        return reply.status(500).send({ message: "Internal Server Error" })
+    }
+}
+
+export const returnReservation = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+        const { userId } = request.user as { userId: string };
+
+        const parsedUserId = parseInt(userId);
+
+        const { reservationId, copyId } = request.body as { reservationId: number, copyId: number };
+
+        const reservation = await reservationRepository.findUnique({ where: { id: reservationId }  });
+
+        if(!reservation) return reply.send(404).send({ message: "Reservation not found"})
+
+        const copy = await copyRepository.findUnique({ where: { id: copyId }  });
+
+        if(!copy) return reply.send(404).send({ message: "Copy not found"})
+
+        const updatedReservation = await reservationRepository.update({ where: { id: reservationId }, data: { status: "returned"}})
+
+        await copyRepository.update({ where: { id: copy.id }, data: { isAvailable: true }});
+
+        return reply.send(updatedReservation);
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
     }

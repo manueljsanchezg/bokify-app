@@ -53,6 +53,15 @@ export interface createReservation {
     returnDate?: Date;
 }
 
+export interface returnReservationReq {
+    reservationId?: number;
+    copyId?: number;
+}
+
 export interface ReservationModalInstance {
     open: () => void;
-  }
+}
+
+export interface ReturnReservationModalInstance {
+    open: () => void;
+}

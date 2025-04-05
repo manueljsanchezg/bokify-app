@@ -1,6 +1,6 @@
 import axios from "axios";
 import { jwtStorage } from "../storage/storage";
-import type { createReservation } from "../utils/interfaces";
+import type { createReservation, returnReservationReq } from "../utils/interfaces";
 
 const API_URL = "http://localhost:3000/api/reservations";
 
@@ -34,6 +34,29 @@ export const doReservation = async (reservationData: createReservation) => {
                     return { success: false, message: "Invalid request" };
                 case 406:
                     return { success: false, message: "You already have an active reservation" };
+            }
+        } else {
+            return { success: false, message: "Conexion error" };
+        }
+    }
+}
+
+
+export const returnReservation = async (returnReservationData: returnReservationReq) => {
+    try {
+        const response = await axios.post(`${API_URL}/reservation`, returnReservationData, {
+            headers: {
+                'Authorization': `Bearer ${jwtStorage.value}`
+            }
+        });
+        return { success: true, ...response.data };
+    } catch (error) {
+        console.error(error);
+        if (axios.isAxiosError(error) && error.response) {
+            const statusCode = error.response.status;
+            switch (statusCode) {
+                case 404:
+                    return { success: false, message: "Resource not found" };
             }
         } else {
             return { success: false, message: "Conexion error" };
