@@ -4,7 +4,7 @@
             <slot></slot>
             <div class="modal-actions">
                 <v-btn @click="close">Close</v-btn>
-                <v-btn @click="props.handleClick">Accept</v-btn>
+                <v-btn @click="acceptAndClose">Accept</v-btn>
             </div>
         </div>
     </dialog>
@@ -24,10 +24,15 @@ const props = defineProps<Props>();
 
 watchEffect(() => {
     openModal.value === true ? modal.value?.showModal() : modal.value?.close();
-});
+})
 
 function close() {
     openModal.value = false;
+}
+
+function acceptAndClose() {
+    props.handleClick()
+    close()
 }
 
 </script>

@@ -19,10 +19,12 @@
                     <td>{{ format(reservation.startDate.split("T")[0], "dd MMMM yyyy") }}</td>
                     <td>{{ format(reservation.returnDate.split("T")[0], "dd MMMM yyyy") }}</td>
                     <td>{{ reservation.status.toUpperCase() }}</td>
-                    <td><v-btn>return</v-btn></td>
+                    <td><v-btn @click="openReturnModal(reservation)" :disabled="reservation.status === 'RETURNED'">return</v-btn></td>
                 </tr>
             </tbody>
         </v-table>
+        <Modal v-model="showModal" :handle-click="handleReturn">
+        </Modal>
     </div>
 </template>
 
@@ -31,11 +33,12 @@ import { onMounted, ref } from 'vue';
 import { getAllReservations, returnReservation } from '../service/reservation.service';
 import type { Reservation } from '../utils/interfaces';
 import { format } from "date-fns";
+import Modal from '../components/Modal.vue';
 
 const reservations = ref<Reservation[]>([]);
 const isLoading = ref(true);
-
-
+const reservationData = ref<Reservation | null>(null);
+const showModal = ref(false)
 
 onMounted(async () => {
     try {
@@ -49,19 +52,25 @@ onMounted(async () => {
     }
 })
 
-/*
+const openReturnModal = (reservation: Reservation) => {
+    reservationData.value = reservation;
+    showModal.value = true
+}
+
 const handleReturn = async () => {
     console.log("click")
     try {
-        const response = await returnReservation({ reservationId: props.reservationId, copyId: props.copyId });
+        console.log(reservationData.value)
+        const response = await returnReservation({ reservationId: reservationData.value?.id , copyId: reservationData.value?.copy.id });
         if (response.success) {
-            router.push("/reservations");
+            const index = reservations.value.findIndex(r => r.id === reservationData.value?.id);
+            reservations.value[index].status = reservationData.value?.status === 'ACTIVE' ? 'RETURNED': 'ACTIVE';
         }
     } catch (error) {
         console.error(error);
     }
 }
-*/
+
 </script>
 
 <style>

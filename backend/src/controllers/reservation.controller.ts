@@ -80,10 +80,6 @@ export const doReservation = async (request: FastifyRequest, reply: FastifyReply
 
 export const returnReservation = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const { userId } = request.user as { userId: string };
-
-        const parsedUserId = parseInt(userId);
-
         const { reservationId, copyId } = request.body as { reservationId: number, copyId: number };
 
         const reservation = await reservationRepository.findUnique({ where: { id: reservationId }  });
@@ -94,11 +90,16 @@ export const returnReservation = async (request: FastifyRequest, reply: FastifyR
 
         if(!copy) return reply.send(404).send({ message: "Copy not found"})
 
-        const updatedReservation = await reservationRepository.update({ where: { id: reservationId }, data: { status: "returned"}})
+
+        if(reservation.status === 'returned') {
+            await reservationRepository.update({ where: { id: reservationId }, data: { status: "active"}})
+        } else {
+            await reservationRepository.update({ where: { id: reservationId }, data: { status: "returned"}})
+        }
 
         await copyRepository.update({ where: { id: copy.id }, data: { isAvailable: true }});
 
-        return reply.send(updatedReservation);
+        return reply.send({ message: 'Reservation returned'});
     } catch (error) {
         return reply.status(500).send({ message: "Internal Server Error" })
     }

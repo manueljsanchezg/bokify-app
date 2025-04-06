@@ -44,7 +44,7 @@ export const doReservation = async (reservationData: createReservation) => {
 
 export const returnReservation = async (returnReservationData: returnReservationReq) => {
     try {
-        const response = await axios.post(`${API_URL}/reservation`, returnReservationData, {
+        const response = await axios.post(`${API_URL}/return`, returnReservationData, {
             headers: {
                 'Authorization': `Bearer ${jwtStorage.value}`
             }
