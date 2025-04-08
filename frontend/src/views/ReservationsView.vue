@@ -20,11 +20,15 @@
                     <td>{{ format(reservation.returnDate.split("T")[0], "dd MMMM yyyy") }}</td>
                     <td>{{ reservation.status.toUpperCase() }}</td>
                     <td><v-btn @click="openReturnModal(reservation)" :disabled="reservation.status === 'RETURNED'">return</v-btn></td>
+                    <td><v-btn @click="openModal()" >return2</v-btn></td>
                 </tr>
             </tbody>
         </v-table>
         <Modal v-model="showModal" :handle-click="handleReturn">
         </Modal>
+        <Modal2 :open="isOpen" :handle-click="handleReturn" @close="isOpen = !isOpen">
+
+        </Modal2>
     </div>
 </template>
 
@@ -34,11 +38,13 @@ import { getAllReservations, returnReservation } from '../service/reservation.se
 import type { Reservation } from '../utils/interfaces';
 import { format } from "date-fns";
 import Modal from '../components/Modal.vue';
+import Modal2 from '../components/Modal2.vue';
 
 const reservations = ref<Reservation[]>([]);
 const isLoading = ref(true);
 const reservationData = ref<Reservation | null>(null);
 const showModal = ref(false)
+const isOpen = ref(false);
 
 onMounted(async () => {
     try {
@@ -51,6 +57,10 @@ onMounted(async () => {
         isLoading.value = false
     }
 })
+
+const openModal = () => {
+    isOpen.value = true;
+}
 
 const openReturnModal = (reservation: Reservation) => {
     reservationData.value = reservation;
