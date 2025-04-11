@@ -1,9 +1,9 @@
 <template>
-    <div class="modal-wrapper" v-if="open" @click.self="close">
+    <div class="modal-wrapper" v-if="open">
         <div class="modal-container">
             <slot></slot>
             <div class="modal-actions">
-                <v-btn @click="$emit('close', false)">Close</v-btn>
+                <v-btn @click="open = false">Close</v-btn>
                 <v-btn @click="acceptAndClose">Accept</v-btn>
             </div>
         </div>
@@ -12,26 +12,17 @@
 
 <script setup lang="ts">
 
-interface Props {
-    open: Boolean,
-    handleClick: () => void
-}
+const open = defineModel({ default: false});
 
-interface Emits {
-    (event: 'close', value: boolean): void;
+interface Props {
+    handleClick: () => void
 }
 
 const props = defineProps<Props>();
 
-const emit = defineEmits<Emits>();
-
-const close = () => {
-    emit('close', false);
-}
-
 const acceptAndClose = () => {
     props.handleClick();
-    close();
+    open.value = false;
 }
 
 </script>

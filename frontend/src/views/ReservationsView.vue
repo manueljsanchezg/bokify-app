@@ -20,13 +20,13 @@
                     <td>{{ format(reservation.returnDate.split("T")[0], "dd MMMM yyyy") }}</td>
                     <td>{{ reservation.status.toUpperCase() }}</td>
                     <td><v-btn @click="openReturnModal(reservation)" :disabled="reservation.status === 'RETURNED'">return</v-btn></td>
-                    <td><v-btn @click="openModal()" >return2</v-btn></td>
+                    <td><v-btn @click="showModal2 = true" >return2</v-btn></td>
                 </tr>
-            </tbody>
+            </tbody>const showModal = ref(false)
         </v-table>
         <Modal v-model="showModal" :handle-click="handleReturn">
         </Modal>
-        <Modal2 :open="isOpen" :handle-click="handleReturn" @close="isOpen = !isOpen">
+        <Modal2 v-model="showModal2"  :handle-click="handleReturn">
 
         </Modal2>
     </div>
@@ -44,7 +44,7 @@ const reservations = ref<Reservation[]>([]);
 const isLoading = ref(true);
 const reservationData = ref<Reservation | null>(null);
 const showModal = ref(false)
-const isOpen = ref(false);
+const showModal2 = ref(false)
 
 onMounted(async () => {
     try {
@@ -57,10 +57,6 @@ onMounted(async () => {
         isLoading.value = false
     }
 })
-
-const openModal = () => {
-    isOpen.value = true;
-}
 
 const openReturnModal = (reservation: Reservation) => {
     reservationData.value = reservation;
